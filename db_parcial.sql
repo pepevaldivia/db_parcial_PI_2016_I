@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 16-05-2016 a las 13:47:02
+-- Tiempo de generación: 16-05-2016 a las 15:48:24
 -- Versión del servidor: 5.5.49-0ubuntu0.14.04.1
 -- Versión de PHP: 5.5.9-1ubuntu4.16
 
@@ -35,7 +35,8 @@ CREATE TABLE IF NOT EXISTS `alumnos` (
   `foto_url` varchar(100) NOT NULL,
   `codigo` int(11) NOT NULL,
   `id_colegio` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `id_colegio` (`id_colegio`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -48,7 +49,9 @@ CREATE TABLE IF NOT EXISTS `alumnos_secciones` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_alumno` int(11) NOT NULL,
   `id_seccion` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `id_alumno` (`id_alumno`),
+  KEY `id_seccion` (`id_seccion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -74,8 +77,9 @@ CREATE TABLE IF NOT EXISTS `cursos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(20) NOT NULL,
   `codigo` int(11) NOT NULL,
-  `id_carrera` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  `id_escuela` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_carrera` (`id_escuela`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2010,7 +2014,9 @@ CREATE TABLE IF NOT EXISTS `notas` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_alumno_seccion` int(11) NOT NULL,
   `nota` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `id_alumno_seccion` (`id_alumno_seccion`),
+  KEY `nota` (`nota`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2027,7 +2033,8 @@ CREATE TABLE IF NOT EXISTS `profesores` (
   `dni` varchar(8) NOT NULL,
   `foto_url` varchar(100) NOT NULL,
   `id_estudio` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `id_estudio` (`id_estudio`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2255,12 +2262,33 @@ CREATE TABLE IF NOT EXISTS `secciones` (
   `codigo` int(11) NOT NULL,
   `id_curso` int(11) NOT NULL,
   `id_profesor` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `id_curso` (`id_curso`),
+  KEY `id_profesor` (`id_profesor`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `alumnos`
+--
+ALTER TABLE `alumnos`
+  ADD CONSTRAINT `alumnos_ibfk_1` FOREIGN KEY (`id_colegio`) REFERENCES `colegios` (`id`);
+
+--
+-- Filtros para la tabla `alumnos_secciones`
+--
+ALTER TABLE `alumnos_secciones`
+  ADD CONSTRAINT `alumnos_secciones_ibfk_2` FOREIGN KEY (`id_seccion`) REFERENCES `secciones` (`id`),
+  ADD CONSTRAINT `alumnos_secciones_ibfk_1` FOREIGN KEY (`id_alumno`) REFERENCES `alumnos` (`id`);
+
+--
+-- Filtros para la tabla `cursos`
+--
+ALTER TABLE `cursos`
+  ADD CONSTRAINT `cursos_ibfk_1` FOREIGN KEY (`id_escuela`) REFERENCES `escuelas` (`id`);
 
 --
 -- Filtros para la tabla `distritos`
@@ -2269,10 +2297,29 @@ ALTER TABLE `distritos`
   ADD CONSTRAINT `distrito_ibfk_1s` FOREIGN KEY (`id_provincia`) REFERENCES `provincias` (`id`);
 
 --
+-- Filtros para la tabla `notas`
+--
+ALTER TABLE `notas`
+  ADD CONSTRAINT `notas_ibfk_1` FOREIGN KEY (`id_alumno_seccion`) REFERENCES `alumnos_secciones` (`id`);
+
+--
+-- Filtros para la tabla `profesores`
+--
+ALTER TABLE `profesores`
+  ADD CONSTRAINT `profesores_ibfk_1` FOREIGN KEY (`id_estudio`) REFERENCES `estudios` (`id`);
+
+--
 -- Filtros para la tabla `provincias`
 --
 ALTER TABLE `provincias`
   ADD CONSTRAINT `provincia_ibfk_1s` FOREIGN KEY (`id_departamento`) REFERENCES `departamentos` (`id`);
+
+--
+-- Filtros para la tabla `secciones`
+--
+ALTER TABLE `secciones`
+  ADD CONSTRAINT `secciones_ibfk_2` FOREIGN KEY (`id_profesor`) REFERENCES `profesores` (`id`),
+  ADD CONSTRAINT `secciones_ibfk_1` FOREIGN KEY (`id_curso`) REFERENCES `cursos` (`id`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
